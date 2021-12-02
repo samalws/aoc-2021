@@ -1,5 +1,6 @@
 import Control.Monad.State
 import Data.Tuple.Lazy
+import Criterion.Main
 
 parseCmd1 :: String -> Int -> State (Int, Int) ()
 parseCmd1 "forward" n = modify $ mapFst (+ n)
@@ -30,6 +31,13 @@ runFile2 :: String -> (Int, Int)
 runFile2 = snd . snd . flip runState (0,(0, 0)) . parseFile2
 
 main = do
-  f1 <- readFile "inputs/D2.txt"
-  print $ uncurry (*) $ runFile1 f1
-  print $ uncurry (*) $ runFile2 f1
+  f <- readFile "inputs/D2.txt"
+  print $ uncurry (*) $ runFile1 f
+  print $ uncurry (*) $ runFile2 f
+  defaultMain
+    [ bgroup
+        "D2"
+        [ bench "P1" $ whnf runFile1 f,
+          bench "P2" $ whnf runFile2 f
+        ]
+    ]

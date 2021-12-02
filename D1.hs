@@ -1,3 +1,5 @@
+import Criterion.Main
+
 groupsOfN :: [a] -> Int -> [[a]]
 groupsOfN l n = groupsOfN' l n (length l) where
   groupsOfN' :: [a] -> Int -> Int -> [[a]]
@@ -21,12 +23,20 @@ nIncreases :: (Ord n, Num n) => Int -> [n] -> Int
 nIncreases n = length . filter (> 0) . (convolute $ [-1] <> replicate (n-1) 0 <> [1])
 
 main = do
-  f <- readFile "inputs/D1.txt"
-  print $ numIncreases $ read <$> lines f
-  print $ nIncreases 1 $ read <$> lines f
+  f <- ((read <$>) . lines) <$> readFile "inputs/D1.txt"
+  print $ numIncreases $ f
+  print $ nIncreases 1 $ f
 
   putStrLn ""
 
-  print $ numIncreases $ threes $ read <$> lines f
-  print $ threesIncreases $ read <$> lines f
-  print $ nIncreases 3 $ read <$> lines f
+  print $ numIncreases $ threes f
+  print $ threesIncreases f
+  print $ nIncreases 3 f
+
+  defaultMain
+    [ bgroup
+        "D1"
+        [ bench "P1" $ whnf (nIncreases 1) f,
+          bench "P2" $ whnf (nIncreases 3) f
+        ]
+    ]
