@@ -21,13 +21,12 @@ nIncreases :: (Ord n, Num n) => Int -> [n] -> Int
 nIncreases n = length . filter (> 0) . (convolute $ [-1] <> replicate (n-1) 0 <> [1])
 
 main = do
-  f1 <- readFile "inputs/D1P1.txt"
-  print $ numIncreases $ read <$> lines f1
-  print $ nIncreases 1 $ read <$> lines f1
+  f <- readFile "inputs/D1.txt"
+  print $ numIncreases $ read <$> lines f
+  print $ nIncreases 1 $ read <$> lines f
 
   putStrLn ""
 
-  f2 <- readFile "inputs/D1P2.txt"
-  print $ numIncreases $ threes $ read <$> lines f2
-  print $ threesIncreases $ read <$> lines f2
-  print $ nIncreases 3 $ read <$> lines f2
+  print $ numIncreases $ threes $ read <$> lines f
+  print $ threesIncreases $ read <$> lines f
+  print $ nIncreases 3 $ read <$> lines f

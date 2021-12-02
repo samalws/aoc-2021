@@ -30,6 +30,6 @@ runFile2 :: String -> (Int, Int)
 runFile2 = snd . snd . flip runState (0,(0, 0)) . parseFile2
 
 main = do
-  f1 <- readFile "inputs/D2P1.txt"
+  f1 <- readFile "inputs/D2.txt"
   print $ uncurry (*) $ runFile1 f1
   print $ uncurry (*) $ runFile2 f1
