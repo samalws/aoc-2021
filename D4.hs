@@ -51,30 +51,29 @@ bingoGameMarkPhase = do
   modify $ mapFst $ const $ zip newBoards (snd <$> boards)
 
 bingoGameCheckPhase :: Bool -> State ([(BoardMarking, Board)], [Int]) ((BoardMarking, Board), [Int])
-bingoGameCheckPhase b = do
+bingoGameCheckPhase False = do
   boardMarkings <- gets $ (fst <$>) . fst
-  let winningBoardNum = getWinningBoard b boardMarkings
-  maybe (bingoGameRepeatPhase b) (bingoGameReturnPhase b) winningBoardNum
+  let winningBoardNum = getWinningBoard boardMarkings
+  maybe (bingoGameRepeatPhase False) bingoGameReturnPhase winningBoardNum
+bingoGameCheckPhase True = do
+  boards <- gets fst
+  let newBoards = filter (not . boardIsWinning . fst) boards
+  modify $ mapFst $ const newBoards
+  bingoGameRepeatPhase (length newBoards > 1)
 
 bingoGameRepeatPhase :: Bool -> State ([(BoardMarking, Board)], [Int]) ((BoardMarking, Board), [Int])
 bingoGameRepeatPhase b = do
   modify $ mapSnd tail
   bingoGame b
 
-bingoGameReturnPhase :: Bool -> Int -> State ([(BoardMarking, Board)], [Int]) ((BoardMarking, Board), [Int])
-bingoGameReturnPhase False boardNum = do
+bingoGameReturnPhase :: Int -> State ([(BoardMarking, Board)], [Int]) ((BoardMarking, Board), [Int])
+bingoGameReturnPhase boardNum = do
   (marking, board) <- gets $ (!! boardNum) . fst
   numList <- gets snd
   pure ((marking, board), numList)
-bingoGameReturnPhase True boardNum = do
-  (marking, board) <- gets $ (!! boardNum) . fst
-  modify $ mapFst $ const [(marking, board)]
-  bingoGameRepeatPhase False
 
-getWinningBoard :: Bool -> [BoardMarking] -> Maybe Int
-getWinningBoard False markings = findIndex boardIsWinning markings
-getWinningBoard True markings = if (length losings == 1) then Just (head losings) else Nothing where
-  losings = fst <$> filter (not . boardIsWinning . snd) (indexed markings)
+getWinningBoard :: [BoardMarking] -> Maybe Int
+getWinningBoard markings = findIndex boardIsWinning markings
 
 boardIsWinning :: BoardMarking -> Bool
 boardIsWinning marking = or $ fmap and $ fmap getElems $ rowElems <> colElems where
