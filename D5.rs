@@ -4,6 +4,7 @@ use std::collections::HashSet;
 use std::cmp::{min,max};
 use parse_int::parse;
 use std::fs;
+use std::time::Instant;
 
 type Point = (i64,i64);
 type Line = (Point,Point);
@@ -103,6 +104,14 @@ fn part2(v: &Vec<Line>) -> usize {
 fn main() {
   let contents = fs::read_to_string("inputs/D5.txt").unwrap();
   let f = parseFile(contents);
-  println!("{}",part1(&f));
-  println!("{}",part2(&f));
+
+  let now = Instant::now();
+  let p1Ans = part1(&f);
+  let dist = now.elapsed().as_millis();
+  println!("P1: {}; time to compute: {} ms",p1Ans,dist);
+
+  let now = Instant::now();
+  let p2Ans = part2(&f);
+  let dist = now.elapsed().as_millis();
+  println!("P2: {}; time to compute: {} ms",p2Ans,dist);
 }
