@@ -1,0 +1,13 @@
+[package]
+name = "aoc-2021"
+version = "0.1.0"
+authors = ["Sam Alws <sam@samalws.com>"]
+edition = "2021"
+
+[[bin]]
+name = "D5"
+path = "D5.rs"
+
+
+[dependencies]
+parse_int = "0.1.0"
