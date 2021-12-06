@@ -50,7 +50,9 @@ bingoGameMarkPhase = do
   let newBoards = uncurry (markBoard firstNum) <$> boards
   modify $ mapFst $ const $ zip newBoards (snd <$> boards)
 
-bingoGameCheckPhase :: Bool -> State ([(BoardMarking, Board)], [Int]) ((BoardMarking, Board), [Int])
+type X = BoardMarking
+
+bingoGameCheckPhase :: Bool -> State ([(BoardMarking, Board)], [Int]) (X, [Int])
 bingoGameCheckPhase False = do
   boardMarkings <- gets $ (fst <$>) . fst
   let winningBoardNum = getWinningBoard boardMarkings
@@ -61,16 +63,16 @@ bingoGameCheckPhase True = do
   modify $ mapFst $ const newBoards
   bingoGameRepeatPhase (length newBoards > 1)
 
-bingoGameRepeatPhase :: Bool -> State ([(BoardMarking, Board)], [Int]) ((BoardMarking, Board), [Int])
+bingoGameRepeatPhase :: Bool -> State ([(BoardMarking, Board)], [Int]) (X, [Int])
 bingoGameRepeatPhase b = do
   modify $ mapSnd tail
   bingoGame b
 
-bingoGameReturnPhase :: Int -> State ([(BoardMarking, Board)], [Int]) ((BoardMarking, Board), [Int])
+bingoGameReturnPhase :: Int -> State ([(BoardMarking, Board)], [Int]) (X, [Int])
 bingoGameReturnPhase boardNum = do
   (marking, board) <- gets $ (!! boardNum) . fst
   numList <- gets snd
-  pure ((marking, board), numList)
+  pure (marking, numList)
 
 getWinningBoard :: [BoardMarking] -> Maybe Int
 getWinningBoard markings = findIndex boardIsWinning markings
@@ -84,7 +86,7 @@ boardIsWinning marking = or $ fmap and $ fmap getElems $ rowElems <> colElems wh
   (numRows, numCols) = snd $ bounds marking
   getElems e = (marking !) <$> e
 
-bingoGame :: Bool -> State ([(BoardMarking, Board)], [Int]) ((BoardMarking, Board), [Int])
+bingoGame :: Bool -> State ([(BoardMarking, Board)], [Int]) (X, [Int])
 bingoGame b = do
   bingoGameMarkPhase
   bingoGameCheckPhase b
@@ -92,20 +94,22 @@ bingoGame b = do
 sumUnmarked :: BoardMarking -> Board -> Int
 sumUnmarked marking board = sum $ fmap snd $ filter (not . fst) $ elems marking `zip` elems board
 
-runFile :: Bool -> ([Board], [Int]) -> Int
+-- runFile :: Bool -> ([Board], [Int]) -> ((BoardMarking,Board),Int)
 runFile b (boards, nums) = processResult $ fst $ runState (bingoGame b) (zip initialMarkings boards, nums) where
-  processResult ((winningMarking, winningBoard), newNums) = head newNums * sumUnmarked winningMarking winningBoard
+  -- processResult ((winningMarking, winningBoard), newNums) = ((winningMarking,winningBoard),head newNums * sumUnmarked winningMarking winningBoard)
+  processResult (n,newNums) = (n,newNums)
   initialMarkings = (const False <$>) <$> boards
 
-runFile1 :: ([Board], [Int]) -> Int
+-- runFile1 :: ([Board], [Int]) -> (Int,Int)
 runFile1 = runFile False
 
-runFile2 :: ([Board], [Int]) -> Int
+-- runFile2 :: ([Board], [Int]) -> Int
 runFile2 = runFile True
 
 main = do
-  f <- parseFile <$> readFile "inputs/D4.txt"
+  f <- parseFile <$> readFile "inputs/D4B.txt"
   print $ runFile1 f
+  {-
   print $ runFile2 f
   defaultMain
     [ bgroup
@@ -114,3 +118,4 @@ main = do
           bench "P2" $ whnf runFile2 f
         ]
     ]
+  -}
