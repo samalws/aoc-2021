@@ -2,11 +2,30 @@ section .text
   global _start
 
 _start:
+call initNums
 mov rax, 80
 call dayRoutine
 mov rax, 256-80
 call dayRoutine
-call exit
+jmp exit
+
+
+initNums:
+mov ecx, 0
+
+initNumsLoop:
+cmp ecx, lenIndices
+jl initNumsNoRet
+ret
+
+initNumsNoRet:
+mov ebx, indices[ecx]
+shl ebx, 3 ; multiply by 8
+mov rax, nums[ebx]
+add rax, 1
+mov nums[ebx], rax
+add ecx, 8
+jmp initNumsLoop
 
 
 dayRoutine:
@@ -194,7 +213,11 @@ ret
 
 
 section	.data
-nums dq 0, 119, 45, 48, 40, 48, 0, 0, 0
+
+indices dq 2,4,1,5,1,3,1,1,5,2,2,5,4,2,1,2,5,3,2,4,1,3,5,3,1,3,1,3,5,4,1,1,1,1,5,1,2,5,5,5,2,3,4,1,1,1,2,1,4,1,3,2,1,4,3,1,4,1,5,4,5,1,4,1,2,2,3,1,1,1,2,5,1,1,1,2,1,1,2,2,1,4,3,3,1,1,1,2,1,2,5,4,1,4,3,1,5,5,1,3,1,5,1,5,2,4,5,1,2,1,1,5,4,1,1,4,5,3,1,4,5,1,3,2,2,1,1,1,4,5,2,2,5,1,4,5,2,1,1,5,3,1,1,1,3,1,2,3,3,1,4,3,1,2,3,1,4,2,1,2,5,4,2,5,4,1,1,2,1,2,4,3,3,1,1,5,1,1,1,1,1,3,1,4,1,4,1,2,3,5,1,2,5,4,5,4,1,3,1,4,3,1,2,2,2,1,5,1,1,1,3,2,1,3,5,2,1,1,4,4,3,5,3,5,1,4,3,1,3,5,1,3,4,1,2,5,2,1,5,4,3,4,1,3,3,5,1,1,3,5,3,3,4,3,5,5,1,4,1,1,3,5,5,1,5,4,4,1,3,1,1,1,1,3,2,1,2,3,1,5,1,1,1,4,3,1,1,1,1,1,1,1,1,1,2,1,1,2,5,3
+lenIndices equ $ - indices
+
+nums times 9 dq 0
 lenNums equ $ - nums
 
 msg db 'Hello, world!'
