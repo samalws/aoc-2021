@@ -21,12 +21,13 @@ jl initNumsNoRet
 ret
 
 initNumsNoRet:
-mov ebx, indices[ecx]
+mov ebx, 0
+mov bl, indices[ecx]
 shl ebx, 3 ; multiply by 8
 mov rax, nums[ebx]
 add rax, 1
 mov nums[ebx], rax
-add ecx, 8
+add ecx, 1
 jmp initNumsLoop
 
 
@@ -216,7 +217,6 @@ readFile:
 mov ebx, fileName
 mov eax, 5 ; open
 mov ecx, 0 ; read-only
-mov edx, 0777 ; TODO do I need this?
 int 0x80
 mov ebx, eax ; file descriptor
 mov eax, 3   ; read
@@ -244,13 +244,13 @@ mov al, fileBuf[ecx]
 sub al, '0'
 mov indices[ebx], rax
 add ecx, 2
-add ebx, 8
+add ebx, 1
 jmp parseFileLoop
 
 
 section	.data
 
-indices times 1000 dq 0
+indices times 1000 db 0
 indicesSize dd 0
 
 nums times 9 dq 0
