@@ -5,9 +5,11 @@ authors = ["Sam Alws <sam@samalws.com>"]
 edition = "2021"
 
 [[bin]]
-name = "D5"
-path = "D5.rs"
+name = "D6"
+path = "D6.rs"
 
 
 [dependencies]
 parse_int = "0.1.0"
+num = "0.1.36"
+rayon = "0.6.0"

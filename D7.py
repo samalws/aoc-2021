@@ -1,0 +1,7 @@
+f = open("inputs/D7.txt","r")
+l = eval("["+f.read()+"]")
+p1l = lambda x: sum(map(lambda v: abs(v-x),l))
+p2l = lambda x: sum(map(lambda v: abs(v-x)*(abs(v-x)+1)/2,l))
+r = range(min(l),max(l))
+print(min(map(p1l,r)))
+print(min(map(p2l,r)))
