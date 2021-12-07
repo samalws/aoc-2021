@@ -1,20 +1,22 @@
 section .text
-  global _start
+ global _start
 
 _start:
+call readFile
 call initNums
-mov rax, 80
+ mov rax, 80
 call dayRoutine
-mov rax, 256-80
+ mov rax, 256-80
 call dayRoutine
 jmp exit
 
 
 initNums:
 mov ecx, 0
+mov edx, [indicesSize]
 
 initNumsLoop:
-cmp ecx, lenIndices
+cmp ecx, edx
 jl initNumsNoRet
 ret
 
@@ -210,12 +212,46 @@ mov eax, 4
 int 0x80
 ret
 
+readFile:
+mov ebx, fileName
+mov eax, 5 ; open
+mov ecx, 0 ; read-only
+mov edx, 0777 ; TODO do I need this?
+int 0x80
+mov ebx, eax ; file descriptor
+mov eax, 3   ; read
+mov ecx, fileBuf
+mov edx, 1000
+int 0x80
+mov [fileBufAmtFilled], eax
+jmp parseFile
+
+
+parseFile:
+mov rax, 0
+mov edx, [fileBufAmtFilled]
+mov ecx, 0 ; fileBuf index
+mov ebx, 0 ; indices index
+
+parseFileLoop:
+cmp ecx, edx
+jl parseFileDontRet
+mov [indicesSize], ebx
+ret
+
+parseFileDontRet:
+mov al, fileBuf[ecx]
+sub al, '0'
+mov indices[ebx], rax
+add ecx, 2
+add ebx, 8
+jmp parseFileLoop
 
 
 section	.data
 
-indices dq 2,4,1,5,1,3,1,1,5,2,2,5,4,2,1,2,5,3,2,4,1,3,5,3,1,3,1,3,5,4,1,1,1,1,5,1,2,5,5,5,2,3,4,1,1,1,2,1,4,1,3,2,1,4,3,1,4,1,5,4,5,1,4,1,2,2,3,1,1,1,2,5,1,1,1,2,1,1,2,2,1,4,3,3,1,1,1,2,1,2,5,4,1,4,3,1,5,5,1,3,1,5,1,5,2,4,5,1,2,1,1,5,4,1,1,4,5,3,1,4,5,1,3,2,2,1,1,1,4,5,2,2,5,1,4,5,2,1,1,5,3,1,1,1,3,1,2,3,3,1,4,3,1,2,3,1,4,2,1,2,5,4,2,5,4,1,1,2,1,2,4,3,3,1,1,5,1,1,1,1,1,3,1,4,1,4,1,2,3,5,1,2,5,4,5,4,1,3,1,4,3,1,2,2,2,1,5,1,1,1,3,2,1,3,5,2,1,1,4,4,3,5,3,5,1,4,3,1,3,5,1,3,4,1,2,5,2,1,5,4,3,4,1,3,3,5,1,1,3,5,3,3,4,3,5,5,1,4,1,1,3,5,5,1,5,4,4,1,3,1,1,1,1,3,2,1,2,3,1,5,1,1,1,4,3,1,1,1,1,1,1,1,1,1,2,1,1,2,5,3
-lenIndices equ $ - indices
+indices times 1000 dq 0
+indicesSize dd 0
 
 nums times 9 dq 0
 lenNums equ $ - nums
@@ -234,3 +270,10 @@ lenDecNumMsg equ $ - decNumMsg
 
 space db ' '
 newline db 0xa
+
+fileBuf times 2000 db 0
+fileBufLen equ $ - fileBuf
+fileBufAmtFilled dd 0
+
+fileName db 'inputs/D6.txt'
+fileNameLen equ $ - fileName
