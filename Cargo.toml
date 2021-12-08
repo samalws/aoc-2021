@@ -5,8 +5,8 @@ authors = ["Sam Alws <sam@samalws.com>"]
 edition = "2021"
 
 [[bin]]
-name = "D6"
-path = "D6.rs"
+name = "D8"
+path = "D8.rs"
 
 
 [dependencies]
