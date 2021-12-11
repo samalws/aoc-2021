@@ -2,6 +2,7 @@ section .text
  global _start
 
 _start:
+call readFile
 call main1
 mov rax, [numFlashes]
 call printDecNum
@@ -38,7 +39,7 @@ pop rdx
 pop rcx
 mov rax, [numFlashes]
 sub rax, rdx
-cmp rax, (rows-2)*(cols-2)
+cmp rax, (rows-2)*(cols-1)
 je retTag
 inc rcx
 jmp mainLoop2
@@ -201,6 +202,41 @@ mov eax,1
 int 0x80
 
 
+readFile:
+mov ebx, fileName
+mov eax, 5 ; open
+mov ecx, 0 ; read-only
+int 0x80
+mov ebx, eax ; file descriptor
+mov eax, 3   ; read
+mov ecx, crabs+cols+1
+mov edx, 1000 ; max length
+int 0x80
+jmp parseFile
+
+
+parseFile:
+mov ecx, 0
+mov al, paddingVal
+
+parseFileLoop:
+mov al, crabs[ecx]
+cmp al, 0xa
+je parseFileLoopNewline
+sub al, '0'
+jmp parseFileLoopInc
+
+parseFileLoopNewline:
+mov al, paddingVal
+
+parseFileLoopInc:
+mov crabs[ecx], al
+inc ecx
+cmp ecx, crabsLen
+je retTag
+jmp parseFileLoop
+
+
 
 section .data
 paddingVal equ 0xFF
@@ -208,9 +244,9 @@ flashedVal equ 0xFE
 flashVal equ 10
 resetVal equ 0
 rows equ 12
-cols equ 12
-crabsLen equ rows*cols
-crabs db paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,6,6,1,7,1,1,3,5,8,4,paddingVal,paddingVal,6,5,4,4,2,1,8,6,3,8,paddingVal,paddingVal,5,4,5,7,3,3,1,4,8,8,paddingVal,paddingVal,1,1,3,5,6,7,5,5,8,7,paddingVal,paddingVal,1,2,2,1,3,5,3,2,1,6,paddingVal,paddingVal,1,8,1,1,1,2,4,3,7,8,paddingVal,paddingVal,1,3,8,7,8,6,4,3,6,8,paddingVal,paddingVal,4,4,2,7,6,3,7,2,6,2,paddingVal,paddingVal,6,7,7,8,6,4,5,4,8,6,paddingVal,paddingVal,3,6,8,2,1,4,6,7,4,5,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal,paddingVal ; created by D11inps.py
+cols equ 11
+crabsLen equ rows*cols+1
+crabs times crabsLen db 0xa
 numFlashes dq 0
 
 decNumMsg times 20 db 0
@@ -218,3 +254,5 @@ lenDecNumMsg equ $ - decNumMsg
 
 space db ' '
 newline db 0xa
+
+fileName db "inputs/D11.txt"
