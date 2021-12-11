@@ -92,7 +92,7 @@ ret
 
 
 exit:
-mov eax,1
+mov eax, 0
 int 0x80
 
 
