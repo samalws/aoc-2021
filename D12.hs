@@ -49,9 +49,10 @@ part1 = explore1Start
 part2 = explore2Start
 
 main = do
-  f <- parseOctopus <$> readFile "inputs/D12.txt"
+  f <- parseOctopus <$> readFile "inputs/D12B1.txt"
   print $ part1 f
   print $ part2 f
+  {-
   defaultMain
     [ bgroup
         "D12"
@@ -59,3 +60,4 @@ main = do
           bench "P2" $ whnf part2 f
         ]
     ]
+  -}
