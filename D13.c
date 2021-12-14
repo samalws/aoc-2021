@@ -59,45 +59,52 @@ fileContents readFile() {
   retVal.numXFolds = 0;
   retVal.numYFolds = 0;
 
-  char* fstPart = strtok(text, "\n\n");
-  char* sndPart = strtok(text, "\n\n");
+  // char* fstPart = strtok(text, "\n\n");
+  // char* sndPart = strtok(NULL, "\n\n");
+  //   printf("%s\n", fstPart);
+  char* fstPart = text;
+  char* sndPart = text;
 
-  printf("made it here\n");
-  {
-    char* token = strtok(fstPart, ",");
-    while (token != NULL) {
-      printf("%s", token);
-      int x = atoi(token);
-      token = strtok(fstPart, "\n");
-      int y = atoi(token);
-      *(getIndex(retVal.p, x, y)) = true;
-      retVal.p->cols = max(retVal.p->cols, x+1);
-      retVal.p->rows = max(retVal.p->rows, y+1);
-      token = strtok(fstPart, ",");
-    }
+  for (char* token = strtok(fstPart, ","); token != NULL; token = strtok(NULL, ",")) {
+    if (strlen(token) == 0) break;
+    if (*token == '\n') break;
+    printf("0 %s\n", token);
+    int x = atoi(token);
+    token = strtok(NULL, "\n");
+    int y = atoi(token);
+    *(getIndex(retVal.p, x, y)) = true;
+    retVal.p->cols = max(retVal.p->cols, x+1);
+    retVal.p->rows = max(retVal.p->rows, y+1);
   }
-  printf("made it here\n");
-  {
-    char* token = strtok(sndPart, "\n");
-    int ignoreBefore = strlen("fold along x=");
-    int letterIndex = strlen("fold along ");
-    while (token != NULL) {
-      if (token[letterIndex] == 'x') {
-        retVal.xFolds[retVal.numXFolds] = atoi(token + ignoreBefore);
-        retVal.numXFolds++;
-      } else {
-        retVal.yFolds[retVal.numYFolds] = atoi(token + ignoreBefore);
-        retVal.numYFolds++;
-      }
-      token = strtok(sndPart, "\n");
+
+  int ignoreBefore = strlen("fold along x=");
+  int letterIndex = strlen("fold along ");
+  for (char* token = strtok(NULL, "\n"); token != NULL; token = strtok(NULL, "\n")) {
+    printf("a %s\n", token);
+    if (token[letterIndex] == 'x') {
+      retVal.xFolds[retVal.numXFolds] = atoi(token + ignoreBefore);
+      retVal.numXFolds++;
+    } else {
+      retVal.yFolds[retVal.numYFolds] = atoi(token + ignoreBefore);
+      retVal.numYFolds++;
     }
   }
 
   return retVal;
 }
 
+int numOnes(paper* p) {
+  int tot = 0;
+  for (int x = 0; x < p->cols; x++)
+    for (int y = 0; y < p->rows; y++)
+      if (*getIndex(p,x,y))
+        tot++;
+  return tot;
+}
+
 int main() {
   fileContents f = readFile();
-  printf("done reading\n");
+  printf("b %d\n", numOnes(f.p));
   foldPaperX(f.p, f.xFolds[0]);
-} // sad......
+  printf("b %d\n", numOnes(f.p));
+}

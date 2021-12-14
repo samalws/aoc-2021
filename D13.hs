@@ -70,7 +70,7 @@ part2 :: [(Int, Int)] -> (Reflection, Reflection) -> String
 part2 pts refls = printSet $ fileToSet pts refls
 
 main = do
-  f <- readFile "inputs/D13.txt"
+  f <- readFile "inputs/D13based.txt"
   let f1 = parseFile1 f
   let f2 = parseFile  f
   print $ uncurry part1 f1
