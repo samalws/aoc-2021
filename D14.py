@@ -15,20 +15,30 @@ def mergeEnumDicts(a, b, sub):
   d[sub] -= 1
   return d
 
-def makeEnumDict(n, rs):
-  toEnum = [a + b for a in "QWERTYUIOPASDFGHJKLZXCVBNM" for b in "QWERTYUIOPASDFGHJKLZXCVBNM"]
+toEnum = [a + b for a in "QWERTYUIOPASDFGHJKLZXCVBNM" for b in "QWERTYUIOPASDFGHJKLZXCVBNM"]
+
+def makeFirstEnumDict():
   enumDict = {}
-  if n == 0:
-    for pair in toEnum:
-      enumDict[pair] = makeEnumFromPair(pair)
-  else:
-    lastDict = makeEnumDict(n-1, rs)
-    for pair in toEnum:
-      if not pair in rs: continue
-      pair1 = pair[0] + rs[pair]
-      pair2 = rs[pair] + pair[1]
-      enumDict[pair] = mergeEnumDicts(lastDict[pair1], lastDict[pair2], rs[pair])
+  for pair in toEnum:
+    enumDict[pair] = makeEnumFromPair(pair)
   return enumDict
+
+def makeNextEnumDict(lastDict, rs):
+  enumDict = {}
+  for pair in toEnum:
+    if not pair in rs: continue
+    pair1 = pair[0] + rs[pair]
+    pair2 = rs[pair] + pair[1]
+    enumDict[pair] = mergeEnumDicts(lastDict[pair1], lastDict[pair2], rs[pair])
+  return enumDict
+
+def makeEnumDict(n, rs):
+  dict = makeFirstEnumDict()
+  for i in range(n):
+    if i % 1000 == 0:
+      print(i)
+    dict = makeNextEnumDict(dict, rs)
+  return dict
 
 def makeEnumDictLong(n, rs, s):
   enumDict = makeEnumDict(n, rs)
@@ -48,3 +58,5 @@ freqs1 = makeEnumDictLong(10, rs, s)
 print(max(freqs1.values()) - min(freqs1.values()))
 freqs2 = makeEnumDictLong(40, rs, s)
 print(max(freqs2.values()) - min(freqs2.values()))
+freqs3 = makeEnumDictLong(100000, rs, s)
+print(max(freqs2.values()) - min(freqs3.values()))
