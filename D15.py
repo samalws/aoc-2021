@@ -1,4 +1,40 @@
-def needful(arr):
+def minDict(d):
+  m = 1000000
+  mi = None
+  for k,v in d.items():
+    if v < m:
+      mi = k
+      m = v
+  return mi
+
+def neighbors(x,y,n):
+  l = []
+  if x > 0:   l += [(x-1,y)]
+  if y > 0:   l += [(x,y-1)]
+  if x < n-1: l += [(x+1,y)]
+  if y < n-1: l += [(x,y+1)]
+  return l
+
+def dijkstra(arr):
+  cloneArr = list(map(lambda r: list(map(lambda x: 0, r)), arr))
+  n = len(arr)
+  done = {}
+  touched = {}
+  touched[(0,0)] = True
+
+  while len(touched) > 0:
+    (x,y) = minDict(touched)
+    for (x2,y2) in neighbors(x,y,n):
+      if (x2,y2) not in done and ((x2,y2) not in touched or cloneArr[x2][y2] > cloneArr[x][y] + arr[x2][y2]):
+        cloneArr[x2][y2] = cloneArr[x][y] + arr[x2][y2]
+        touched[(x2,y2)] = True
+    touched.pop((x,y))
+    done[(x,y)] = True
+
+  return cloneArr[n-1][n-1]
+
+
+def naive(arr):
   arr[0][0] = 0
   n = len(arr)
   for x in range(n):
@@ -42,8 +78,8 @@ def mod(r):
 
 f = open("inputs/D15.txt","r").read()
 p = parse(f)
-print(needful(p))
+print(dijkstra(p))
 f = open("inputs/D15.txt","r").read()
 p = parse(f)
 pp = mod(p)
-print(needful(pp))
+print(dijkstra(pp))
