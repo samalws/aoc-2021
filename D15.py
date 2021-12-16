@@ -1,7 +1,8 @@
-def minDict(d):
+def minDict(d,e):
   m = 1000000
   mi = None
-  for k,v in d.items():
+  for k,_ in d.items():
+    v = e[k[0]][k[1]]
     if v < m:
       mi = k
       m = v
@@ -23,7 +24,7 @@ def dijkstra(arr):
   touched[(0,0)] = True
 
   while len(touched) > 0:
-    (x,y) = minDict(touched)
+    (x,y) = minDict(touched,cloneArr)
     for (x2,y2) in neighbors(x,y,n):
       if (x2,y2) not in done and ((x2,y2) not in touched or cloneArr[x2][y2] > cloneArr[x][y] + arr[x2][y2]):
         cloneArr[x2][y2] = cloneArr[x][y] + arr[x2][y2]
