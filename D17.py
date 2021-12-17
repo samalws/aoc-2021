@@ -16,7 +16,7 @@ def sim(vx,vy,x=0,y=0):
     vy -= 1
 
 t = 0
-for vx in range(1000):
+for vx in range(square[1]+10):
   for vy in range(square[2]-10,-square[2]+10):
     if sim(vx,vy):
       t += 1
