@@ -31,13 +31,18 @@ zeroIndexPair [False]   (Pair a b) = Leaf 0
 zeroIndexPair (False:r) (Pair a b) = Pair (zeroIndexPair r a) b
 zeroIndexPair (True:r)  (Pair a b) = Pair a (zeroIndexPair r b)
 
+firstGoodIndex :: [(a,[Bool])] -> Maybe a
+firstGoodIndex ((x,a):(_,b):c) | length a > 4 && last a == False && last b == True && init a == init b = Just x
+firstGoodIndex (_:c) = firstGoodIndex c
+firstGoodIndex [] = Nothing
+
 explodeSnail :: Snail -> Maybe Snail
-explodeSnail s = if (null filtInds) then Nothing else Just result where
+explodeSnail s = if (isNothing fgi) then Nothing else Just result where
   inds = indices s
   ni = length inds
   taggedInds = [0..] `zip` inds
-  filtInds = filter ((> 4) . length . snd) taggedInds
-  firstInd = fst $ head filtInds
+  fgi = firstGoodIndex taggedInds
+  firstInd = fromJust fgi
   tryIndex :: Int -> Int -> Snail -> Snail
   tryIndex i add ss
     | i < 0 || i >= ni = ss
