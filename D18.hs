@@ -2,13 +2,6 @@ import Data.Maybe
 
 data Snail = Leaf Int | Pair Snail Snail deriving (Show, Read, Eq)
 
-parseSnail0 :: String -> String
-parseSnail0 s = concat $ repl <$> s where
-  repl ',' = " "
-  repl '[' = "(Pair "
-  repl ']' = ")"
-  repl x | x `elem` ['0'..'9'] = "(Leaf " <> [x] <> ")"
-
 parseSnail :: String -> Snail
 parseSnail s = read $ concat $ repl <$> s where
   repl ',' = " "
