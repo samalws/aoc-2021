@@ -28,7 +28,6 @@ def parseInputs(s):
     lspl = line.split(" ")
     b = lspl[0] == "on"
     l = []
-    i = 0
     for a in lspl[1].split(","):
       aspl = a[2:].split("..")
       l += [(int(aspl[0]),int(aspl[1]))]
